@@ -1,0 +1,34 @@
+version: '3'
+
+services:
+    mongo:
+        image: mongo
+        container_name: mongo
+        tty: true
+        restart: unless-stopped
+        volumes: 
+            - /data/db:/data/db
+        environment: 
+            MONGO_INITDB_ROOT_USERNAME: ${DB_USER}
+            MONGO_INITDB_ROOT_PASSWORD: ${DB_PASSWORD}
+        networks: 
+            - webdevtutorial
+
+    blog:
+        image: node
+        container_name: blog
+        tty: true
+        restart: unless-stopped
+        ports: 
+            - 3000:3000
+        volumes: 
+            - .:/var/www/blog
+        working_dir: /var/www/blog
+        entrypoint: ['npm', 'run', 'devStart']
+        depends_on: 
+            - mongo
+        networks: 
+            - webdevtutorial
+
+networks:
+    webdevtutorial:
